@@ -72,7 +72,11 @@ const WorkspaceFormPage = () => {
           setPhotos(
             data.photos.map((p: any) => ({
               file: null,
-              preview: p.foto_path ? `http://localhost:5000${p.foto_path}` : "",
+              preview: p.foto_path
+                ? p.foto_path.startsWith("http")
+                  ? p.foto_path
+                  : `http://localhost:5000${p.foto_path}`
+                : "",
               keterangan: p.keterangan || "",
               arah: p.arah || "Kiri",
               existingPath: p.foto_path || null,

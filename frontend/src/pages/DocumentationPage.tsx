@@ -49,7 +49,11 @@ const DocumentationPage = () => {
         state: {
           judul: data.judul,
           photos: data.photos.map((p: any) => ({
-            preview: p.foto_path ? `http://localhost:5000${p.foto_path}` : "",
+            preview: p.foto_path
+              ? p.foto_path.startsWith("http")
+                ? p.foto_path
+                : `http://localhost:5000${p.foto_path}`
+              : "",
             keterangan: p.keterangan,
             arah: p.arah,
           })),

@@ -1,22 +1,26 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
+const { v2: cloudinary } = require("cloudinary");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const pool = require("../config/db");
 const authMiddleware = require("../middleware/auth");
 
 const router = express.Router();
 
-// Multer config
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = path.join(__dirname, "..", "uploads", "workspace");
-    fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `${Date.now()}-${Math.round(Math.random() * 1e6)}${ext}`);
+// Cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "doksita/workspace",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+    transformation: [{ quality: "auto" }],
   },
 });
 
@@ -85,7 +89,7 @@ router.post(
             (f) => f.fieldname === "photos" && files.indexOf(f) === i,
           ) || files[i];
         const meta = photoMeta[i] || {};
-        const fotoPath = file ? `/uploads/workspace/${file.filename}` : null;
+        const fotoPath = file ? file.path : null;
 
         await conn.query(
           "INSERT INTO workspace_photos (workspace_id, foto_path, keterangan, arah, urutan) VALUES (?, ?, ?, ?, ?)",
@@ -224,7 +228,7 @@ router.put(
         let fotoPath = null;
 
         if (meta.hasNewFile && files[fileIndex]) {
-          fotoPath = `/uploads/workspace/${files[fileIndex].filename}`;
+          fotoPath = files[fileIndex].path;
           fileIndex++;
         } else if (meta.existingPath) {
           fotoPath = meta.existingPath;
@@ -248,8 +252,11 @@ router.put(
 
       for (const photo of oldPhotos) {
         if (photo.foto_path && !newPaths.has(photo.foto_path)) {
-          const filePath = path.join(__dirname, "..", photo.foto_path);
-          if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+          // Extract Cloudinary public_id from URL and delete
+          const publicId = extractPublicId(photo.foto_path);
+          if (publicId) {
+            cloudinary.uploader.destroy(publicId).catch(() => {});
+          }
         }
       }
 
@@ -264,6 +271,16 @@ router.put(
   },
 );
 
+// Helper: extract Cloudinary public_id from URL
+function extractPublicId(url) {
+  if (!url || !url.includes("cloudinary")) return null;
+  const parts = url.split("/upload/");
+  if (parts.length < 2) return null;
+  // Remove version prefix (v1234567890/) and file extension
+  const afterUpload = parts[1].replace(/^v\d+\//, "");
+  return afterUpload.replace(/\.[^.]+$/, "");
+}
+
 // DELETE WORKSPACE
 router.delete("/:id", authMiddleware, async (req, res) => {
   try {
@@ -272,10 +289,12 @@ router.delete("/:id", authMiddleware, async (req, res) => {
       [req.params.id],
     );
 
-    // Delete photo files
+    // Delete photo files from Cloudinary
     for (const photo of photos) {
-      const filePath = path.join(__dirname, "..", photo.foto_path);
-      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      const publicId = extractPublicId(photo.foto_path);
+      if (publicId) {
+        cloudinary.uploader.destroy(publicId).catch(() => {});
+      }
     }
 
     await pool.query("DELETE FROM workspaces WHERE id = ? AND user_id = ?", [
