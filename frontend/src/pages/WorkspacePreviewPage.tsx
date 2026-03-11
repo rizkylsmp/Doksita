@@ -7,6 +7,7 @@ interface PhotoData {
   preview: string;
   keterangan: string;
   arah: string;
+  posY?: number;
   existingPath?: string | null;
 }
 
@@ -415,6 +416,9 @@ const WorkspacePreviewPage = () => {
                               src={photo.preview}
                               alt={`Foto ${photo.arah}`}
                               className="w-full h-full object-cover"
+                              style={{
+                                objectPosition: `center ${photo.posY ?? 50}%`,
+                              }}
                               crossOrigin="anonymous"
                             />
                           ) : (

@@ -36,6 +36,7 @@ async function migrate() {
         foto_path VARCHAR(255),
         keterangan VARCHAR(255),
         arah VARCHAR(50),
+        pos_y INT DEFAULT 50,
         urutan INT DEFAULT 0,
         FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE
       )
@@ -51,6 +52,16 @@ async function migrate() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
+
+    // Add pos_y column if not exists
+    const [cols] = await pool.query(
+      "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'workspace_photos' AND COLUMN_NAME = 'pos_y'",
+    );
+    if (cols.length === 0) {
+      await pool.query(
+        "ALTER TABLE workspace_photos ADD COLUMN pos_y INT DEFAULT 50 AFTER arah",
+      );
+    }
 
     console.log("Migration berhasil: semua tabel sudah dibuat");
     process.exit(0);

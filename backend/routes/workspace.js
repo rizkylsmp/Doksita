@@ -94,12 +94,13 @@ router.post(
         const fotoPath = file ? file.path : null;
 
         await conn.query(
-          "INSERT INTO workspace_photos (workspace_id, foto_path, keterangan, arah, urutan) VALUES (?, ?, ?, ?, ?)",
+          "INSERT INTO workspace_photos (workspace_id, foto_path, keterangan, arah, pos_y, urutan) VALUES (?, ?, ?, ?, ?, ?)",
           [
             workspaceId,
             fotoPath,
             meta.keterangan || "",
             meta.arah || "Kiri",
+            meta.pos_y != null ? meta.pos_y : 50,
             i,
           ],
         );
@@ -148,7 +149,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
     }
 
     const [photos] = await pool.query(
-      "SELECT id, foto_path, keterangan, arah, urutan FROM workspace_photos WHERE workspace_id = ? ORDER BY urutan",
+      "SELECT id, foto_path, keterangan, arah, pos_y, urutan FROM workspace_photos WHERE workspace_id = ? ORDER BY urutan",
       [req.params.id],
     );
 
@@ -241,12 +242,13 @@ router.put(
         if (fotoPath) newPaths.add(fotoPath);
 
         await conn.query(
-          "INSERT INTO workspace_photos (workspace_id, foto_path, keterangan, arah, urutan) VALUES (?, ?, ?, ?, ?)",
+          "INSERT INTO workspace_photos (workspace_id, foto_path, keterangan, arah, pos_y, urutan) VALUES (?, ?, ?, ?, ?, ?)",
           [
             workspaceId,
             fotoPath,
             meta.keterangan || "",
             meta.arah || "Kiri",
+            meta.pos_y != null ? meta.pos_y : 50,
             i,
           ],
         );

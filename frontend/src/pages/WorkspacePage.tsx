@@ -58,6 +58,7 @@ const WorkspacePage = () => {
               : "",
             keterangan: p.keterangan,
             arah: p.arah,
+            posY: p.pos_y != null ? p.pos_y : 50,
           })),
           noBerkas: data.no_berkas,
           catatan: data.catatan,
