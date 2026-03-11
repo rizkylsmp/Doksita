@@ -18,6 +18,7 @@ async function migrate() {
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
         judul VARCHAR(255) NOT NULL,
+        no_berkas VARCHAR(50),
         catatan TEXT,
         keterangan_atas VARCHAR(255),
         ukuran_kertas VARCHAR(10) DEFAULT 'A4',

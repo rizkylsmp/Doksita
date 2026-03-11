@@ -368,7 +368,7 @@ const ForgotPasswordPage = () => {
 
         {/* Footer */}
         <p className="text-center text-xs text-muted mt-6">
-          &copy; 2026 BPN Kota Pekalongan
+          &copy; 2026 DOKSITA. All rights reserved.
         </p>
       </div>
     </div>

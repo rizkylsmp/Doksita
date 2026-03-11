@@ -44,6 +44,7 @@ router.post(
   async (req, res) => {
     const {
       judul,
+      no_berkas,
       catatan,
       keterangan_atas,
       ukuran_kertas,
@@ -61,10 +62,11 @@ router.post(
       await conn.beginTransaction();
 
       const [result] = await conn.query(
-        "INSERT INTO workspaces (user_id, judul, catatan, keterangan_atas, ukuran_kertas, orientasi) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO workspaces (user_id, judul, no_berkas, catatan, keterangan_atas, ukuran_kertas, orientasi) VALUES (?, ?, ?, ?, ?, ?, ?)",
         [
           userId,
           judul,
+          no_berkas || null,
           catatan || null,
           keterangan_atas || null,
           ukuran_kertas || "A4",
@@ -123,7 +125,7 @@ router.post(
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT id, judul, catatan, keterangan_atas, ukuran_kertas, orientasi, created_at, updated_at FROM workspaces WHERE user_id = ? ORDER BY updated_at DESC",
+      "SELECT id, judul, no_berkas, catatan, keterangan_atas, ukuran_kertas, orientasi, created_at, updated_at FROM workspaces WHERE user_id = ? ORDER BY updated_at DESC",
       [req.user.id],
     );
     res.json(rows);
@@ -165,6 +167,7 @@ router.put(
   async (req, res) => {
     const {
       judul,
+      no_berkas,
       catatan,
       keterangan_atas,
       ukuran_kertas,
@@ -191,9 +194,10 @@ router.put(
       await conn.beginTransaction();
 
       await conn.query(
-        "UPDATE workspaces SET judul = ?, catatan = ?, keterangan_atas = ?, ukuran_kertas = ?, orientasi = ? WHERE id = ? AND user_id = ?",
+        "UPDATE workspaces SET judul = ?, no_berkas = ?, catatan = ?, keterangan_atas = ?, ukuran_kertas = ?, orientasi = ? WHERE id = ? AND user_id = ?",
         [
           judul,
+          no_berkas || null,
           catatan || null,
           keterangan_atas || null,
           ukuran_kertas || "A4",

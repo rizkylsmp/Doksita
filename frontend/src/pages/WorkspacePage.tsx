@@ -5,6 +5,7 @@ import api from "../api/axios";
 interface Workspace {
   id: number;
   judul: string;
+  no_berkas: string;
   catatan: string;
   keterangan_atas: string;
   ukuran_kertas: string;
@@ -58,6 +59,7 @@ const WorkspacePage = () => {
             keterangan: p.keterangan,
             arah: p.arah,
           })),
+          noBerkas: data.no_berkas,
           catatan: data.catatan,
           keteranganAtas: data.keterangan_atas,
           ukuranKertas: data.ukuran_kertas,
@@ -141,6 +143,11 @@ const WorkspacePage = () => {
                 <h3 className="font-bold text-gray-900 mb-1 truncate">
                   {ws.judul}
                 </h3>
+                {ws.no_berkas && (
+                  <p className="text-xs text-brand font-medium mb-1">
+                    No Berkas : {ws.no_berkas}
+                  </p>
+                )}
                 <p className="text-xs text-gray-400 mb-3">
                   {new Date(ws.created_at).toLocaleDateString("id-ID", {
                     day: "numeric",

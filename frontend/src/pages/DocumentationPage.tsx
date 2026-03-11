@@ -57,10 +57,12 @@ const DocumentationPage = () => {
             keterangan: p.keterangan,
             arah: p.arah,
           })),
+          noBerkas: data.no_berkas,
           catatan: data.catatan,
           keteranganAtas: data.keterangan_atas,
           ukuranKertas: data.ukuran_kertas,
           orientasi: data.orientasi,
+          fromDocumentation: true,
         },
       });
     } catch {
@@ -140,7 +142,11 @@ const DocumentationPage = () => {
                 <div className="flex items-center gap-2 ml-4 shrink-0">
                   {/* Edit */}
                   <button
-                    onClick={() => navigate(`/workspace/edit/${ws.id}`)}
+                    onClick={() =>
+                      navigate(`/workspace/edit/${ws.id}`, {
+                        state: { fromDocumentation: true },
+                      })
+                    }
                     className="w-9 h-9 flex items-center justify-center rounded-full bg-accent-light hover:bg-emerald-200 text-accent-dark transition-colors cursor-pointer"
                     title="Edit"
                   >
