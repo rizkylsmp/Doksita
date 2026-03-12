@@ -188,6 +188,15 @@ const WorkspacePreviewPage = () => {
     if (!wrapper) return;
     setExporting(true);
 
+    // Save and reset the scale transform so html2canvas captures at full size
+    const origTransform = wrapper.style.transform;
+    const origTransformOrigin = wrapper.style.transformOrigin;
+    wrapper.style.transform = "none";
+    wrapper.style.transformOrigin = "top left";
+
+    // Scroll to top to avoid offset issues on mobile
+    window.scrollTo(0, 0);
+
     try {
       // Pre-convert all images to base64 to avoid cross-origin issues
       const images = wrapper.querySelectorAll("img");
@@ -213,7 +222,8 @@ const WorkspacePreviewPage = () => {
         }),
       );
 
-      await new Promise((r) => setTimeout(r, 100));
+      // Wait for images to settle after src swap
+      await new Promise((r) => setTimeout(r, 300));
 
       // Capture each page individually
       const pageElements = wrapper.querySelectorAll(".page-content");
@@ -224,19 +234,29 @@ const WorkspacePreviewPage = () => {
         format: [pageW, pageH],
       });
 
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const captureScale = isMobile ? 1.5 : 2;
+
       for (let i = 0; i < pageElements.length; i++) {
         if (i > 0) pdf.addPage([pageW, pageH], orientation);
 
-        const canvas = await html2canvas(pageElements[i] as HTMLElement, {
-          scale: 2,
+        const el = pageElements[i] as HTMLElement;
+        const canvas = await html2canvas(el, {
+          scale: captureScale,
           useCORS: true,
           allowTaint: true,
           backgroundColor: "#ffffff",
           width: pageWpx,
           height: pageHpx,
+          scrollX: 0,
+          scrollY: 0,
+          x: 0,
+          y: 0,
+          windowWidth: pageWpx,
+          windowHeight: pageHpx,
         });
 
-        const imgData = canvas.toDataURL("image/jpeg", 0.95);
+        const imgData = canvas.toDataURL("image/jpeg", 0.92);
         pdf.addImage(imgData, "JPEG", 0, 0, pageW, pageH);
       }
 
@@ -254,6 +274,9 @@ const WorkspacePreviewPage = () => {
       console.error("Export PDF gagal:", err);
       alert("Gagal mengexport PDF. Coba lagi.");
     } finally {
+      // Restore original scale transform
+      wrapper.style.transform = origTransform;
+      wrapper.style.transformOrigin = origTransformOrigin;
       setExporting(false);
     }
   };
