@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import api from "../api/axios";
 
@@ -65,77 +65,8 @@ const WorkspaceFormPage = () => {
   const [saveError, setSaveError] = useState("");
   const [loading, setLoading] = useState(isEditing && !initialState);
   const [actionSheet, setActionSheet] = useState<number | null>(null);
-  const [cameraOpen, setCameraOpen] = useState<number | null>(null);
   const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [facingMode, setFacingMode] = useState<"environment" | "user">(
-    "environment",
-  );
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-
-  const stopCamera = useCallback(() => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((t) => t.stop());
-      streamRef.current = null;
-    }
-  }, []);
-
-  const startCamera = useCallback(
-    async (facing: "environment" | "user") => {
-      stopCamera();
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: facing,
-            width: { ideal: 1280 },
-            height: { ideal: 960 },
-          },
-          audio: false,
-        });
-        streamRef.current = stream;
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch {
-        alert("Tidak dapat mengakses kamera. Pastikan izin kamera diaktifkan.");
-        setCameraOpen(null);
-      }
-    },
-    [stopCamera],
-  );
-
-  useEffect(() => {
-    if (cameraOpen !== null) {
-      startCamera(facingMode);
-    }
-    return () => {
-      if (cameraOpen === null) stopCamera();
-    };
-  }, [cameraOpen, facingMode, startCamera, stopCamera]);
-
-  const handleCapture = () => {
-    if (!videoRef.current || cameraOpen === null) return;
-    const video = videoRef.current;
-    const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext("2d")!;
-    ctx.drawImage(video, 0, 0);
-    canvas.toBlob(
-      (blob) => {
-        if (blob) {
-          const file = new File([blob], `camera-${Date.now()}.jpg`, {
-            type: "image/jpeg",
-          });
-          handlePhotoChange(cameraOpen, file);
-        }
-        stopCamera();
-        setCameraOpen(null);
-      },
-      "image/jpeg",
-      0.9,
-    );
-  };
+  const cameraInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (isEditing && !initialState) {
@@ -380,6 +311,20 @@ const WorkspaceFormPage = () => {
                           e.target.value = "";
                         }}
                       />
+                      <input
+                        ref={(el) => {
+                          cameraInputRefs.current[i] = el;
+                        }}
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        className="hidden"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          if (f) handlePhotoChange(i, f);
+                          e.target.value = "";
+                        }}
+                      />
                     </>
                   )}
                 </div>
@@ -540,7 +485,7 @@ const WorkspaceFormPage = () => {
                 onClick={() => {
                   const idx = actionSheet;
                   setActionSheet(null);
-                  setCameraOpen(idx);
+                  cameraInputRefs.current[idx]?.click();
                 }}
                 className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl hover:bg-brand-light transition-colors cursor-pointer"
               >
@@ -612,77 +557,7 @@ const WorkspaceFormPage = () => {
         </div>
       )}
 
-      {/* Camera Modal */}
-      {cameraOpen !== null && (
-        <div className="fixed inset-0 z-50 bg-black flex flex-col">
-          <div className="flex items-center justify-between px-4 py-3 bg-black/80">
-            <span className="text-white text-sm font-medium">
-              Foto {cameraOpen + 1}
-            </span>
-            <button
-              onClick={() => {
-                stopCamera();
-                setCameraOpen(null);
-              }}
-              className="text-white hover:text-red-400 cursor-pointer"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-6 h-6"
-              >
-                <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
-              </svg>
-            </button>
-          </div>
 
-          <div className="flex-1 flex items-center justify-center overflow-hidden">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="max-w-full max-h-full object-contain"
-            />
-          </div>
-
-          <div className="flex items-center justify-center gap-8 px-4 py-5 bg-black/80">
-            <button
-              onClick={() =>
-                setFacingMode((m) =>
-                  m === "environment" ? "user" : "environment",
-                )
-              }
-              className="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white cursor-pointer transition-colors"
-              title="Ganti Kamera"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M4.755 10.059a7.5 7.5 0 0112.548-3.364l1.903 1.903h-3.183a.75.75 0 100 1.5h4.992a.75.75 0 00.75-.75V4.356a.75.75 0 00-1.5 0v3.18l-1.9-1.9A9 9 0 003.306 9.67a.75.75 0 101.45.388zm14.49 3.882a7.5 7.5 0 01-12.548 3.364l-1.902-1.903h3.183a.75.75 0 000-1.5H2.984a.75.75 0 00-.75.75v4.992a.75.75 0 001.5 0v-3.18l1.9 1.9a9 9 0 0015.059-4.035.75.75 0 00-1.45-.388z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-
-            <button
-              onClick={handleCapture}
-              className="w-16 h-16 rounded-full bg-white hover:bg-gray-200 flex items-center justify-center cursor-pointer transition-colors border-4 border-white/50"
-              title="Ambil Foto"
-            >
-              <div className="w-12 h-12 rounded-full bg-white border-2 border-gray-300" />
-            </button>
-
-            <div className="w-12 h-12" />
-          </div>
-        </div>
-      )}
     </div>
   );
 };
