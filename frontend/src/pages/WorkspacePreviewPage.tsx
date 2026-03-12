@@ -194,6 +194,17 @@ const WorkspacePreviewPage = () => {
     wrapper.style.transform = "none";
     wrapper.style.transformOrigin = "top left";
 
+    // Also expand the outer container so the unscaled content is fully visible
+    const outerContainer = wrapper.parentElement;
+    const origOuterWidth = outerContainer?.style.width;
+    const origOuterHeight = outerContainer?.style.height;
+    const origOuterOverflow = outerContainer?.style.overflow;
+    if (outerContainer) {
+      outerContainer.style.width = `${pageWpx}px`;
+      outerContainer.style.height = "auto";
+      outerContainer.style.overflow = "visible";
+    }
+
     // Scroll to top to avoid offset issues on mobile
     window.scrollTo(0, 0);
 
@@ -274,9 +285,14 @@ const WorkspacePreviewPage = () => {
       console.error("Export PDF gagal:", err);
       alert("Gagal mengexport PDF. Coba lagi.");
     } finally {
-      // Restore original scale transform
+      // Restore original scale transform and outer container
       wrapper.style.transform = origTransform;
       wrapper.style.transformOrigin = origTransformOrigin;
+      if (outerContainer) {
+        outerContainer.style.width = origOuterWidth || "";
+        outerContainer.style.height = origOuterHeight || "";
+        outerContainer.style.overflow = origOuterOverflow || "";
+      }
       setExporting(false);
     }
   };
@@ -366,124 +382,128 @@ const WorkspacePreviewPage = () => {
           </span>
         </div>
 
+        {/* Scaled container — ensures layout box matches visual size */}
         <div
-          ref={wrapperRef}
+          className="print:w-auto! print:h-auto! print:overflow-visible!"
           style={{
-            width: `${pageWpx}px`,
-            transform: `scale(${scale})`,
-            transformOrigin: "top center",
+            width: `${pageWpx * scale}px`,
+            height: `${totalWrapperH * scale}px`,
+            overflow: "hidden",
+            position: "relative",
           }}
-          className="print:transform-none! print:w-auto!"
         >
-          {pages.map((page, idx) => (
-            <div key={idx}>
-              <div
-                className="page-content bg-white shadow-lg relative border border-gray-300"
-                style={{
-                  width: `${pageWpx}px`,
-                  height: `${pageHpx}px`,
-                  padding: `${pagePad}px`,
-                }}
-              >
-                {page.showHeader && data.noBerkas && (
-                  <p
-                    className="text-xs font-semibold text-gray-800 absolute"
-                    style={{ top: "12px", right: "16px" }}
-                  >
-                    No Berkas : {data.noBerkas}
-                  </p>
-                )}
+          <div
+            ref={wrapperRef}
+            style={{
+              width: `${pageWpx}px`,
+              transform: `scale(${scale})`,
+              transformOrigin: "top left",
+            }}
+            className="print:transform-none! print:w-auto!"
+          >
+            {pages.map((page, idx) => (
+              <div key={idx}>
+                <div
+                  className="page-content bg-white shadow-lg relative border border-gray-300"
+                  style={{
+                    width: `${pageWpx}px`,
+                    height: `${pageHpx}px`,
+                    padding: `${pagePad}px`,
+                  }}
+                >
+                  {page.showHeader && data.noBerkas && (
+                    <p
+                      className="text-xs font-semibold text-gray-800 absolute"
+                      style={{ top: "12px", right: "16px" }}
+                    >
+                      No Berkas : {data.noBerkas}
+                    </p>
+                  )}
 
-                {page.showHeader && (
-                  <div className="flex items-center pb-4 border-b-2 border-gray-800">
-                    <img
-                      src="./bpn.svg"
-                      alt="Logo"
-                      className="w-20 h-20"
-                      crossOrigin="anonymous"
-                    />
-                    <div className="text-center flex-1">
-                      <p className="text-md font-bold tracking-wide">
-                        KEMENTERIAN AGRARIA DAN TATA RUANG/
-                      </p>
-                      <p className="text-md font-bold tracking-wide">
-                        BADAN PERTANAHAN NASIONAL
-                      </p>
-                      <p className="text-md font-bold tracking-wide mt-0.5">
-                        KANTOR PERTANAHAN KOTA PEKALONGAN
-                      </p>
-                      <p className="text-sm text-gray-600 mt-0.5">
-                        Jl. Majapahit No.2, Podosugih, Kec. Pekalongan Bar.,
-                        Kota Pekalongan, Jawa Tengah 51111
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {page.showTitle && (
-                  <div className="mt-6 mb-6 text-center">
-                    <h2 className="text-lg font-bold uppercase tracking-wide">
-                      {data.judul ||
-                        "KONDISI PENGGUNAAN TANAH YANG DI MOHONKAN"}
-                    </h2>
-                  </div>
-                )}
-
-                {page.photoRows.length > 0 && (
-                  <div className="grid grid-cols-2 gap-6 mb-8">
-                    {page.photoRows.flat().map((photo, i) => (
-                      <div key={i} className="text-center">
-                        <div className="border border-gray-300 overflow-hidden bg-gray-50 aspect-4/3 mb-2">
-                          {photo.preview ? (
-                            <img
-                              src={photo.preview}
-                              alt={`Foto ${photo.arah}`}
-                              className="w-full h-full object-cover"
-                              style={{
-                                objectPosition: `center ${photo.posY ?? 50}%`,
-                              }}
-                              crossOrigin="anonymous"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-                              Tidak ada foto
-                            </div>
-                          )}
-                        </div>
-                        <p className="text-sm font-semibold text-gray-800">
-                          {photo.keterangan
-                            ? `Tampak ${photo.arah} — ${photo.keterangan}`
-                            : `Tampak ${photo.arah}`}
+                  {page.showHeader && (
+                    <div className="flex items-center pb-4 border-b-2 border-gray-800">
+                      <img
+                        src="./bpn.svg"
+                        alt="Logo"
+                        className="w-20 h-20"
+                        crossOrigin="anonymous"
+                      />
+                      <div className="text-center flex-1">
+                        <p className="text-md font-bold tracking-wide">
+                          KEMENTERIAN AGRARIA DAN TATA RUANG/
+                        </p>
+                        <p className="text-md font-bold tracking-wide">
+                          BADAN PERTANAHAN NASIONAL
+                        </p>
+                        <p className="text-md font-bold tracking-wide mt-0.5">
+                          KANTOR PERTANAHAN KOTA PEKALONGAN
+                        </p>
+                        <p className="text-sm text-gray-600 mt-0.5">
+                          Jl. Majapahit No.2, Podosugih, Kec. Pekalongan Bar.,
+                          Kota Pekalongan, Jawa Tengah 51111
                         </p>
                       </div>
-                    ))}
-                  </div>
-                )}
+                    </div>
+                  )}
 
-                {page.showCatatan && data.catatan && (
-                  <div className="mt-6">
-                    <h3 className="text-base font-bold text-gray-900 mb-2">
-                      Catatan
-                    </h3>
-                    <p className="text-sm text-gray-700 leading-relaxed text-justify">
-                      {data.catatan}
-                    </p>
-                  </div>
+                  {page.showTitle && (
+                    <div className="mt-6 mb-6 text-center">
+                      <h2 className="text-lg font-bold uppercase tracking-wide">
+                        {data.judul ||
+                          "KONDISI PENGGUNAAN TANAH YANG DI MOHONKAN"}
+                      </h2>
+                    </div>
+                  )}
+
+                  {page.photoRows.length > 0 && (
+                    <div className="grid grid-cols-2 gap-6 mb-8">
+                      {page.photoRows.flat().map((photo, i) => (
+                        <div key={i} className="text-center">
+                          <div className="border border-gray-300 overflow-hidden bg-gray-50 aspect-4/3 mb-2">
+                            {photo.preview ? (
+                              <img
+                                src={photo.preview}
+                                alt={`Foto ${photo.arah}`}
+                                className="w-full h-full object-cover"
+                                style={{
+                                  objectPosition: `center ${photo.posY ?? 50}%`,
+                                }}
+                                crossOrigin="anonymous"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                                Tidak ada foto
+                              </div>
+                            )}
+                          </div>
+                          <p className="text-sm font-semibold text-gray-800">
+                            {photo.keterangan
+                              ? `Tampak ${photo.arah} — ${photo.keterangan}`
+                              : `Tampak ${photo.arah}`}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {page.showCatatan && data.catatan && (
+                    <div className="mt-6">
+                      <h3 className="text-base font-bold text-gray-900 mb-2">
+                        Catatan
+                      </h3>
+                      <p className="text-sm text-gray-700 leading-relaxed text-justify">
+                        {data.catatan}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                {idx < pages.length - 1 && (
+                  <div className="h-8 print:hidden" />
                 )}
               </div>
-              {idx < pages.length - 1 && <div className="h-8 print:hidden" />}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-        {/* Spacer to account for scaled height */}
-        {scale < 1 && (
-          <div
-            className="print:hidden"
-            style={{
-              height: `${totalWrapperH * scale - totalWrapperH + 32}px`,
-            }}
-          />
-        )}
       </div>
     </div>
   );
