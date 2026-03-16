@@ -67,7 +67,9 @@ const WorkspaceFormPage = () => {
   const [cameraOpen, setCameraOpen] = useState<number | null>(null);
   const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const cameraInputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [facingMode, setFacingMode] = useState<"environment" | "user">("environment");
+  const [facingMode, setFacingMode] = useState<"environment" | "user">(
+    "environment",
+  );
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
@@ -638,9 +640,6 @@ const WorkspaceFormPage = () => {
           </div>
         </div>
       )}
-
-
-
     </div>
   );
 };
