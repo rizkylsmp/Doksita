@@ -276,7 +276,10 @@ const WorkspacePreviewPage = () => {
         img.src = src;
       }
 
-      const filename = `${data.judul || "dokumen"}.pdf`.replace(
+      const now = new Date();
+      const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
+      const baseName = data.noBerkas || data.judul || "dokumen";
+      const filename = `${baseName}_${dateStr}.pdf`.replace(
         /[^a-zA-Z0-9_\-. ]/g,
         "_",
       );
@@ -497,9 +500,7 @@ const WorkspacePreviewPage = () => {
                     </div>
                   )}
                 </div>
-                {idx < pages.length - 1 && (
-                  <div className="h-8 print:hidden" />
-                )}
+                {idx < pages.length - 1 && <div className="h-8 print:hidden" />}
               </div>
             ))}
           </div>

@@ -321,7 +321,7 @@ const WorkspaceFormPage = () => {
                 className="border border-gray-300 rounded-xl overflow-hidden bg-brand-lighter"
               >
                 {/* Upload area */}
-                <div className="relative h-36 flex items-center justify-center bg-brand-light border-b border-gray-300">
+                <div className="relative aspect-4/3 flex items-center justify-center bg-brand-light border-b border-gray-300">
                   {slot.preview ? (
                     <>
                       <img
