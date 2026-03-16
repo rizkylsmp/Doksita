@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ChevronDownIcon } from "../components/icons";
 
 const steps = [
   {
@@ -42,12 +43,77 @@ const faqs = [
   },
 ];
 
+const sections = [
+  {
+    gradient: "from-brand-medium to-brand",
+    content: (
+      <div className="p-6">
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-14 h-14 bg-brand-light rounded-xl flex items-center justify-center shrink-0">
+            <img src="./bpn.svg" alt="Logo BPN" className="w-9 h-9" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-brand-dark italic">
+              DOKSITA
+            </h2>
+            <p className="text-xs text-gray-400">Dokumentasi Situasi Tanah</p>
+          </div>
+        </div>
+        <p className="text-sm text-gray-600 leading-relaxed">
+          Aplikasi DOKSITA dikembangkan untuk mendukung kegiatan dokumentasi
+          situasi tanah di lingkungan Kantor Pertanahan Kota Pekalongan. Dengan
+          aplikasi ini, petugas lapangan dapat menyusun dokumentasi foto situasi
+          tanah secara digital, lengkap dengan kop surat resmi, dan
+          mengekspornya dalam format PDF yang siap cetak.
+        </p>
+      </div>
+    ),
+  },
+  {
+    gradient: "from-accent to-teal-600",
+    content: (
+      <div className="p-6">
+        <h2 className="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="w-5 h-5 text-accent"
+          >
+            <path
+              fillRule="evenodd"
+              d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v11.75A2.75 2.75 0 0016.75 18h-12A2.75 2.75 0 012 15.25V3.5zm3.75 7a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5zm0 3a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5zM5 5.75A.75.75 0 015.75 5h4.5a.75.75 0 01.75.75v2.5a.75.75 0 01-.75.75h-4.5A.75.75 0 015 8.25v-2.5z"
+              clipRule="evenodd"
+            />
+            <path d="M16.5 6.5h-1v8.75a1.25 1.25 0 102.5 0V8a1.5 1.5 0 00-1.5-1.5z" />
+          </svg>
+          Panduan Penggunaan
+        </h2>
+        <div className="space-y-4">
+          {steps.map((step, i) => (
+            <div key={i} className="flex gap-4">
+              <div className="w-8 h-8 rounded-full bg-accent-light text-accent-dark font-bold text-sm flex items-center justify-center shrink-0 mt-0.5">
+                {i + 1}
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 text-sm">
+                  {step.title}
+                </h3>
+                <p className="text-sm text-gray-500 mt-0.5">{step.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+  },
+];
+
 const InformationPage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Information</h1>
         <p className="text-sm text-gray-500 mt-1">
@@ -55,68 +121,16 @@ const InformationPage = () => {
         </p>
       </div>
 
-      {/* About */}
-      <section className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="h-1.5 bg-linear-to-r from-brand-medium to-brand" />
-        <div className="p-6">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-14 h-14 bg-brand-light rounded-xl flex items-center justify-center shrink-0">
-              <img src="./bpn.svg" alt="Logo BPN" className="w-9 h-9" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-brand-dark italic">
-                DOKSITA
-              </h2>
-              <p className="text-xs text-gray-400">Dokumentasi Situasi Tanah</p>
-            </div>
-          </div>
-          <p className="text-sm text-gray-600 leading-relaxed">
-            Aplikasi DOKSITA dikembangkan untuk mendukung kegiatan dokumentasi
-            situasi tanah di lingkungan Kantor Pertanahan Kota Pekalongan.
-            Dengan aplikasi ini, petugas lapangan dapat menyusun dokumentasi
-            foto situasi tanah secara digital, lengkap dengan kop surat resmi,
-            dan mengekspornya dalam format PDF yang siap cetak.
-          </p>
-        </div>
-      </section>
-
-      {/* Panduan Penggunaan */}
-      <section className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="h-1.5 bg-linear-to-r from-accent to-teal-600" />
-        <div className="p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-5 h-5 text-accent"
-            >
-              <path
-                fillRule="evenodd"
-                d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v11.75A2.75 2.75 0 0016.75 18h-12A2.75 2.75 0 012 15.25V3.5zm3.75 7a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5zm0 3a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5zM5 5.75A.75.75 0 015.75 5h4.5a.75.75 0 01.75.75v2.5a.75.75 0 01-.75.75h-4.5A.75.75 0 015 8.25v-2.5z"
-                clipRule="evenodd"
-              />
-              <path d="M16.5 6.5h-1v8.75a1.25 1.25 0 102.5 0V8a1.5 1.5 0 00-1.5-1.5z" />
-            </svg>
-            Panduan Penggunaan
-          </h2>
-          <div className="space-y-4">
-            {steps.map((step, i) => (
-              <div key={i} className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-accent-light text-accent-dark font-bold text-sm flex items-center justify-center shrink-0 mt-0.5">
-                  {i + 1}
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">
-                    {step.title}
-                  </h3>
-                  <p className="text-sm text-gray-500 mt-0.5">{step.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* About & Guide */}
+      {sections.map((section, i) => (
+        <section
+          key={i}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+        >
+          <div className={`h-1.5 bg-linear-to-r ${section.gradient}`} />
+          {section.content}
+        </section>
+      ))}
 
       {/* FAQ */}
       <section className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -147,20 +161,9 @@ const InformationPage = () => {
                   <span className="text-sm font-medium text-gray-800 group-hover:text-brand transition-colors pr-4">
                     {faq.q}
                   </span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className={`w-5 h-5 text-gray-400 shrink-0 transition-transform duration-200 ${
-                      openFaq === i ? "rotate-180" : ""
-                    }`}
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  <ChevronDownIcon
+                    className={`w-5 h-5 text-gray-400 shrink-0 transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`}
+                  />
                 </button>
                 {openFaq === i && (
                   <p className="text-sm text-gray-500 pb-4 leading-relaxed">
@@ -193,63 +196,82 @@ const InformationPage = () => {
             Informasi Instansi
           </h2>
           <div className="space-y-3 text-sm text-gray-600">
-            <div className="flex gap-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-5 h-5 text-gray-400 shrink-0 mt-0.5"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M4 16.5v-13h-.25a.75.75 0 010-1.5h12.5a.75.75 0 010 1.5H16v13h.25a.75.75 0 010 1.5h-3.5a.75.75 0 01-.75-.75v-2.5a.75.75 0 00-.75-.75h-2.5a.75.75 0 00-.75.75v2.5a.75.75 0 01-.75.75h-3.5a.75.75 0 010-1.5H4zm3-11a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zm.5 3.5a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1zm3.5-3.5a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zm.5 3.5a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <div>
-                <p className="font-medium text-gray-800">
-                  Kantor Pertanahan Kota Pekalongan
-                </p>
-                <p className="text-gray-500">Badan Pertanahan Nasional (BPN)</p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-5 h-5 text-gray-400 shrink-0 mt-0.5"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z"
-                  clipRule="evenodd"
-                />
-              </svg>
+            <InfoRow
+              icon={
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-5 h-5 text-gray-400 shrink-0 mt-0.5"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4 16.5v-13h-.25a.75.75 0 010-1.5h12.5a.75.75 0 010 1.5H16v13h.25a.75.75 0 010 1.5h-3.5a.75.75 0 01-.75-.75v-2.5a.75.75 0 00-.75-.75h-2.5a.75.75 0 00-.75.75v2.5a.75.75 0 01-.75.75h-3.5a.75.75 0 010-1.5H4zm3-11a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zm.5 3.5a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1zm3.5-3.5a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zm.5 3.5a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              }
+            >
+              <p className="font-medium text-gray-800">
+                Kantor Pertanahan Kota Pekalongan
+              </p>
+              <p className="text-gray-500">Badan Pertanahan Nasional (BPN)</p>
+            </InfoRow>
+            <InfoRow
+              icon={
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-5 h-5 text-gray-400 shrink-0 mt-0.5"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              }
+            >
               <p>Jl. Merdeka No. 1, Kota Pekalongan, Jawa Tengah 51111</p>
-            </div>
-            <div className="flex gap-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-5 h-5 text-gray-400 shrink-0 mt-0.5"
-              >
-                <path d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z" />
-                <path d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z" />
-              </svg>
+            </InfoRow>
+            <InfoRow
+              icon={
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-5 h-5 text-gray-400 shrink-0 mt-0.5"
+                >
+                  <path d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z" />
+                  <path d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z" />
+                </svg>
+              }
+            >
               <p>kantah.kotapekalongan@atrbpn.go.id</p>
-            </div>
+            </InfoRow>
           </div>
         </div>
       </section>
 
-      {/* App Info Footer */}
       <div className="text-center text-xs text-gray-400 pt-2 pb-4">
         <p>DOKSITA v1.0.0 &mdash; &copy; 2026 BPN Kota Pekalongan</p>
       </div>
     </div>
   );
 };
+
+const InfoRow = ({
+  icon,
+  children,
+}: {
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) => (
+  <div className="flex gap-3">
+    {icon}
+    <div>{children}</div>
+  </div>
+);
 
 export default InformationPage;

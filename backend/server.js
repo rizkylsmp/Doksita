@@ -21,6 +21,19 @@ app.use(
 );
 app.use(express.json());
 
+// Landing page
+app.get("/", (_req, res) => {
+  res.json({
+    name: "DOKSITA API",
+    version: "1.0.0",
+    status: "running",
+    endpoints: {
+      auth: "/api/auth",
+      workspaces: "/api/workspaces",
+    },
+  });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/workspaces", workspaceRoutes);
 

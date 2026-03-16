@@ -1,12 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import api from "../api/axios";
-
-interface User {
-  id: number;
-  nama: string;
-  username: string;
-  email: string;
-}
+import type { User } from "../types";
 
 interface AuthContextType {
   isAuthenticated: boolean;
